@@ -87,6 +87,7 @@ class Salary extends Component {
                 <Item extra={result["fpa18"] || 0}>本期预扣预缴税费</Item>
                 <Item extra={result["fpa1023"] || 0}>补退个税差额</Item>
             </List>
+            <WhiteSpace size="md"/>
         </div>);
     }
 }
