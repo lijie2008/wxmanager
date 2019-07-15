@@ -4,7 +4,7 @@ const instance = axios.create({
   baseURL:
   process.env.NODE_ENV !== "development"
     ? window.location.pathname
-      : "http://10.0.127.109/wxmanager/", //设置默认api路径
+      : false, //设置默认api路径
   timeout: 30000, //设置超时时间
   headers: {
     "Accept": "*/*",
