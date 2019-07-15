@@ -1,0 +1,86 @@
+#servlet基础配置
+server:
+  port: 80
+  servlet:
+    context-path: /wxmanager
+    session:
+      timeout: 40000
+
+#spring boot基础配置
+spring:
+  application:
+    name: wxmanager
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+      contentType: text/html;charset=UTF-8
+  aop:
+    proxy-target-class: true
+  datasource:
+    druid:
+      filters: stat
+      maxActive: 10 # 最大支持连接数
+      initialSize: 5 # 初始化连接数目
+      maxWait: 3000 # 最大等待时间 3秒
+      minIdle: 20 # 最小空闲连接数
+      timeBetweenEvictionRunsMillis: 60000 #每一分钟检查一次连接池中空闲的连接，
+      minEvictableIdleTimeMillis: 300000 # 连接池中连接可空闲的时间
+      validationQuery: select 1 from sysibm.sysdummy1 #数据库连接有效性
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 10
+      removeAbandoned: true
+      removeAbandonedTimeout: 300
+      logAbandoned: false
+      datasource1: # 主数据源
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url:  jdbc:mysql://47.95.198.204:3306/wxmanager
+        username: wxmanager
+        password: 1
+      datasource2: # 副数据源
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url:  jdbc:mysql://47.95.198.204:3306/wxmanager
+        username: wxmanager
+        password: 1
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+# mybatis配置
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  type-aliases-package: com.xinda.wx.wxmanager.entity
+  config-location: mybatis-config.xml
+
+#日志配置
+logging:
+  config: classpath:log4j2.xml
+  level:
+    root: debug
+
+#数据库配置
+mybatis-plus:
+  global-config:
+    # 主键类型  0 - 数据库自增 1 用户输入 2 - 全局唯一 （数字类型） 3- 全局唯一 UUID
+    id-type: 3
+    # 字段策略： 0 - 忽略 1 - 非null  2 - 非空判断
+    field-strategy: 2
+    #驼峰下环线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    logic-delete-value: D
+    logic-not-delete-value: E
+
+#微信配置信息
+wechat:
+  mp:
+    appId: wxe4c0046c1e1e987a
+    secret: 52a8904c692ef42bd6676b760d7aeb59
+    token: xinda_token
+    aesKey: 111
