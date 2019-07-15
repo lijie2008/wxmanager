@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {createForm, formShape } from 'rc-form';
-import {List, InputItem, WhiteSpace, Button, Toast} from 'antd-mobile';
+import {List, InputItem, WhiteSpace, Result, Button, Toast, Icon} from 'antd-mobile';
 import instance from "../../common/instance";
 class Register extends Component {
     static propTypes = {
@@ -10,7 +10,8 @@ class Register extends Component {
         super(props);
         this.state = {
             baseInfo: this.getPrams(),
-            userData: {}
+            userData: {},
+            isSuccess: false
          }
     }
     componentDidMount() {
@@ -50,8 +51,7 @@ class Register extends Component {
                 let body = await instance.post("/wx/save", Object.assign({}, {emp: value}, baseInfo));
                 let res = body.data;
                 if(res && res.code === "000") {
-                    Toast.success("注册成功！");
-                    window.close();
+                    this.setState({isSuccess: true})
                 } else {
                     Toast.info(res.message || "[未知原因]注册失败!");
                 }
@@ -66,9 +66,20 @@ class Register extends Component {
         });
     }
     render() {
+        let {isSuccess} = this.state;
         const {getFieldProps} = this.props.form;
         return (<div>
-            <List renderHeader={() => '基本信息'}>
+            {isSuccess && <div>
+                <Result
+                    img={<Icon type="check-circle" style={{fill: "#1F90E6", width: 60, height: 60}}/>}
+                    title="绑定成功"
+                />
+                <WhiteSpace size="md" />
+                <Button type="primary" style={{margin: 10}} onClick={() => {
+                    window.WeixinJSBridge && window.WeixinJSBridge.call('closeWindow');
+                }}>返回</Button>
+            </div>}
+            {!isSuccess && <List renderHeader={() => '基本信息'}>
                 <InputItem
                     placeholder="姓名"
                     {...getFieldProps('fname', {
@@ -97,10 +108,11 @@ class Register extends Component {
                     placeholder="手机号"
                     type="phone"
                 >手机号</InputItem>
-            </List>
-            <WhiteSpace />
-            <WhiteSpace />
-            <Button type="primary" style={{margin: 10}} onClick={this.submit}>提交</Button>
+            </List>}
+            <WhiteSpace size="md"/>
+            {!isSuccess && <List>
+                <Button type="primary" style={{margin: 10}} onClick={this.submit}>提交</Button>
+            </List>}
         </div>);
     }
 }
