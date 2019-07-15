@@ -30,9 +30,11 @@ class Salary extends Component {
         return wxparams;
     }
     getSalary = async ()=>{
+        Toast.loading("加载中", 1);
         let {date, baseInfo} = this.state;
         let body = instance.post("/wx/salary/query", Object.assign({},baseInfo,{date}));
-        let res = body.data;
+        let res = body.data || {};
+        Toast.hide();
         if(res.code === "000") {
             this.setState({result: res.data || {}});
         } else {
@@ -73,10 +75,10 @@ class Salary extends Component {
                 <Item extra={result["fpa1012"] || 0}>试用期工资技术津贴</Item>
                 <Item extra={result["fpa1013"] || 0}>医疗补助</Item>
                 <Item extra={result["fpa1014"] || 0}>午餐补助</Item>
-                <Item extra={result["fpa1015"] || 0}>交通补助：</Item>
-                <Item extra={result["fpa1016"] || 0}>生活补助：</Item>
-                <Item extra={result["fpa1017"] || 0}>考勤/加班费：</Item>
-                <Item extra={result["fpa23"] || 0}>其他补扣款：</Item>
+                <Item extra={result["fpa1015"] || 0}>交通补助</Item>
+                <Item extra={result["fpa1016"] || 0}>生活补助</Item>
+                <Item extra={result["fpa1017"] || 0}>考勤/加班费</Item>
+                <Item extra={result["fpa23"] || 0}>其他补扣款</Item>
                 <Item extra={result["fpa22"] || 0}>住房公积金</Item>
                 <Item extra={result["fpa1018"] || 0}>养老金</Item>
                 <Item extra={result["fpa1019"] || 0}>失业保险金</Item>

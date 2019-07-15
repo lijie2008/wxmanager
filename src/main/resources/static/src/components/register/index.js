@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {createForm, formShape } from 'rc-form';
 import {List, InputItem, WhiteSpace, Result, Button, Toast, Icon} from 'antd-mobile';
 import instance from "../../common/instance";
+import history from '../../common/history';
 class Register extends Component {
     static propTypes = {
         form: formShape,
@@ -11,7 +12,8 @@ class Register extends Component {
         this.state = {
             baseInfo: this.getPrams(),
             userData: {},
-            isSuccess: false
+            isSuccess: false,
+            loading: false
          }
     }
     componentDidMount() {
@@ -30,8 +32,8 @@ class Register extends Component {
     async getUserInfo() {
         let {baseInfo} = this.state;
         let body = await instance.post("/wx/emp", baseInfo);
-        let res = body.data;
-        if(res && res.code === "000") {
+        let res = body.data || {};
+        if(res.code === "000") {
             let userData = res.data || {};
             this.props.form.setFieldsValue({
                 fname: userData.fname || "",
@@ -39,6 +41,9 @@ class Register extends Component {
                 fid: userData.fid || "",
                 fphone: userData.fphone || ""
             });
+        } else if(res.code === "002") {
+            Toast.info(res ? res.message : "该账号未绑定！");
+            history.push("/register");
         } else {
             Toast.info(res ? res.message : "加载失败!");
         }
@@ -48,6 +53,7 @@ class Register extends Component {
         let {baseInfo} = this.state;
         this.props.form.validateFields(async (error, value) => {
             if(!error) {
+                this.setState({loading: true})
                 let body = await instance.post("/wx/save", Object.assign({}, {emp: value}, baseInfo));
                 let res = body.data;
                 if(res && res.code === "000") {
@@ -55,6 +61,7 @@ class Register extends Component {
                 } else {
                     Toast.info(res.message || "[未知原因]注册失败!");
                 }
+                this.setState({loading: false})
             } else {
                 try {
                     let message = Object.values(error)[0].errors[0].message;
@@ -66,7 +73,7 @@ class Register extends Component {
         });
     }
     render() {
-        let {isSuccess} = this.state;
+        let {isSuccess, loading} = this.state;
         const {getFieldProps} = this.props.form;
         return (<div>
             {isSuccess && <div>
@@ -110,9 +117,9 @@ class Register extends Component {
                 >手机号</InputItem>
             </List>}
             <WhiteSpace size="md"/>
-            {!isSuccess && <List>
-                <Button type="primary" style={{margin: 10}} onClick={this.submit}>提交</Button>
-            </List>}
+            {!isSuccess &&
+                <Button type="primary" loading={loading} style={{margin: 10}} onClick={this.submit}>提交</Button>
+            }
         </div>);
     }
 }
